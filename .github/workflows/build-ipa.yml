@@ -24,8 +24,8 @@ jobs:
         run: |
           set -euo pipefail
           test -f "MMDStudio-iOS27.zip"
-          unzip -q "MMDStudio-iOS27.zip"
-          test -d "MMDStudio/MMDStudio.xcodeproj"
+          unzip -q -o "MMDStudio-iOS27.zip"
+          test -d "MMDStudio.xcodeproj"
 
       - name: Build IPA
         run: |
