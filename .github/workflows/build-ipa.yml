@@ -20,12 +20,13 @@ jobs:
       - name: Show Xcode
         run: xcodebuild -version
 
-      - name: Prepare project
+      - name: Download v7 source
         run: |
           set -euo pipefail
-          test -f "MMDStudio-iOS27.zip"
-          unzip -q -o "MMDStudio-iOS27.zip"
-          test -d "MMDStudio.xcodeproj"
+          curl -fL --retry 3 --retry-delay 2 -o MMDStudio-v7.zip "https://aka.doubaocdn.com/s/sNLAjf9Bbg"
+          unzip -q -o MMDStudio-v7.zip
+          test -d "MMDStudio/MMDStudio.xcodeproj"
+          test -f "MMDStudio/Resources/pose_landmarker_lite.task"
 
       - name: Build IPA
         run: |
@@ -35,7 +36,7 @@ jobs:
       - name: Upload IPA artifact
         uses: actions/upload-artifact@v4
         with:
-          name: MMDStudio-ipa
+          name: MMDStudio-unsigned-v7
           path: build/*.ipa
           if-no-files-found: error
 
@@ -43,6 +44,6 @@ jobs:
         if: failure()
         uses: actions/upload-artifact@v4
         with:
-          name: xcodebuild-log
+          name: xcodebuild-log-v7
           path: build/xcodebuild.log
           if-no-files-found: ignore
