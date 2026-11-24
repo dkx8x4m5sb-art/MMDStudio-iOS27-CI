@@ -11,7 +11,7 @@ permissions:
 jobs:
   build:
     runs-on: macos-15-intel
-    timeout-minutes: 30
+    timeout-minutes: 40
 
     steps:
       - name: Checkout
@@ -20,19 +20,21 @@ jobs:
       - name: Show Xcode
         run: xcodebuild -version
 
-      - name: Prepare v6 base and apply v7 patch
+      - name: Prepare v6 base and apply v7 patches
         run: |
           set -euo pipefail
           test -f "MMDStudio-iOS27.zip"
           unzip -q -o "MMDStudio-iOS27.zip"
           test -d "MMDStudio.xcodeproj"
           python3 - <<'PY'
-          import base64
-          raw = base64.b64decode(open("v7.patch.gz.b64", "rb").read())
-          open("v7.patch.gz", "wb").write(raw)
+          import base64, gzip
+          for stem in ("v7.patch", "v7-fix.patch"):
+              raw = base64.b64decode(open(stem + ".gz.b64", "rb").read())
+              open(stem + ".gz", "wb").write(raw)
+              open(stem, "wb").write(gzip.decompress(raw))
           PY
-          gzip -dc v7.patch.gz > v7.patch
           patch -p1 -N -f < v7.patch
+          patch -p1 -N -f < v7-fix.patch
           grep -q "MARKETING_VERSION = 7.0" MMDStudio.xcodeproj/project.pbxproj
           grep -q "CURRENT_PROJECT_VERSION = 7" MMDStudio.xcodeproj/project.pbxproj
 
