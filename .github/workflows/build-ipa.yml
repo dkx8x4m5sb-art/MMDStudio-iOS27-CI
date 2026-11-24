@@ -20,24 +20,14 @@ jobs:
       - name: Show Xcode
         run: xcodebuild -version
 
-      - name: Prepare v6 base and apply v7/v8 patches
+      - name: Prepare complete v9 source
         run: |
           set -euo pipefail
-          test -f "MMDStudio-iOS27.zip"
-          unzip -q -o "MMDStudio-iOS27.zip"
+          test -f "MMDStudio-v9.zip"
+          unzip -q -o "MMDStudio-v9.zip"
           test -d "MMDStudio.xcodeproj"
-          python3 - <<'PY'
-          import base64, gzip
-          for stem in ("v7.patch", "v7-fix.patch", "v8.patch"):
-              raw = base64.b64decode(open(stem + ".gz.b64", "rb").read())
-              open(stem + ".gz", "wb").write(raw)
-              open(stem, "wb").write(gzip.decompress(raw))
-          PY
-          patch -p1 -N -f < v7.patch
-          patch -p1 -N -f < v7-fix.patch || true
-          patch -p1 -N -f < v8.patch
-          grep -q "MARKETING_VERSION = 8.0" MMDStudio.xcodeproj/project.pbxproj
-          grep -q "CURRENT_PROJECT_VERSION = 8" MMDStudio.xcodeproj/project.pbxproj
+          grep -q "MARKETING_VERSION = 9.0" MMDStudio.xcodeproj/project.pbxproj
+          grep -q "CURRENT_PROJECT_VERSION = 9" MMDStudio.xcodeproj/project.pbxproj
 
       - name: Build IPA
         run: |
@@ -47,7 +37,7 @@ jobs:
       - name: Upload IPA artifact
         uses: actions/upload-artifact@v4
         with:
-          name: MMDStudio-unsigned-v8
+          name: MMDStudio-unsigned-v9
           path: build/*.ipa
           if-no-files-found: error
 
@@ -55,6 +45,6 @@ jobs:
         if: failure()
         uses: actions/upload-artifact@v4
         with:
-          name: xcodebuild-log-v8
+          name: xcodebuild-log-v9
           path: build/xcodebuild.log
           if-no-files-found: ignore
