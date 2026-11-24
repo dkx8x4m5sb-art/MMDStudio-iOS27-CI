@@ -28,12 +28,13 @@ jobs:
           test -d "MMDStudio.xcodeproj"
           python3 - <<'PY'
           import base64, gzip
-          for stem in ("v7.patch", "v8.patch"):
+          for stem in ("v7.patch", "v7-fix.patch", "v8.patch"):
               raw = base64.b64decode(open(stem + ".gz.b64", "rb").read())
               open(stem + ".gz", "wb").write(raw)
               open(stem, "wb").write(gzip.decompress(raw))
           PY
           patch -p1 -N -f < v7.patch
+          patch -p1 -N -f < v7-fix.patch || true
           patch -p1 -N -f < v8.patch
           grep -q "MARKETING_VERSION = 8.0" MMDStudio.xcodeproj/project.pbxproj
           grep -q "CURRENT_PROJECT_VERSION = 8" MMDStudio.xcodeproj/project.pbxproj
