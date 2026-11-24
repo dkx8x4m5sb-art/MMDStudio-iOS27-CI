@@ -20,13 +20,21 @@ jobs:
       - name: Show Xcode
         run: xcodebuild -version
 
-      - name: Download v7 source
+      - name: Prepare v6 base and apply v7 patch
         run: |
           set -euo pipefail
-          curl -fL --retry 3 --retry-delay 2 -o MMDStudio-v7.zip "https://aka.doubaocdn.com/s/sNLAjf9Bbg"
-          unzip -q -o MMDStudio-v7.zip
-          test -d "MMDStudio/MMDStudio.xcodeproj"
-          test -f "MMDStudio/Resources/pose_landmarker_lite.task"
+          test -f "MMDStudio-iOS27.zip"
+          unzip -q -o "MMDStudio-iOS27.zip"
+          test -d "MMDStudio.xcodeproj"
+          python3 - <<'PY'
+          import base64
+          raw = base64.b64decode(open("v7.patch.gz.b64", "rb").read())
+          open("v7.patch.gz", "wb").write(raw)
+          PY
+          gzip -dc v7.patch.gz > v7.patch
+          patch -p1 -N -f < v7.patch
+          grep -q "MARKETING_VERSION = 7.0" MMDStudio.xcodeproj/project.pbxproj
+          grep -q "CURRENT_PROJECT_VERSION = 7" MMDStudio.xcodeproj/project.pbxproj
 
       - name: Build IPA
         run: |
