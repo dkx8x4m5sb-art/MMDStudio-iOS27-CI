@@ -11,7 +11,7 @@ permissions:
 jobs:
   build:
     runs-on: macos-15-intel
-    timeout-minutes: 40
+    timeout-minutes: 45
 
     steps:
       - name: Checkout
@@ -20,14 +20,14 @@ jobs:
       - name: Show Xcode
         run: xcodebuild -version
 
-      - name: Prepare complete v9 source
+      - name: Prepare complete v10 source
         run: |
           set -euo pipefail
-          test -f "MMDStudio-v9.zip"
-          unzip -q -o "MMDStudio-v9.zip"
+          test -f "MMDStudio-v10.zip"
+          unzip -q -o "MMDStudio-v10.zip"
           test -d "MMDStudio.xcodeproj"
-          grep -q "MARKETING_VERSION = 9.0" MMDStudio.xcodeproj/project.pbxproj
-          grep -q "CURRENT_PROJECT_VERSION = 9" MMDStudio.xcodeproj/project.pbxproj
+          grep -q "MARKETING_VERSION = 10.0" MMDStudio.xcodeproj/project.pbxproj
+          grep -q "CURRENT_PROJECT_VERSION = 10" MMDStudio.xcodeproj/project.pbxproj
 
       - name: Build IPA
         run: |
@@ -37,7 +37,7 @@ jobs:
       - name: Upload IPA artifact
         uses: actions/upload-artifact@v4
         with:
-          name: MMDStudio-unsigned-v9
+          name: MMDStudio-unsigned-v10
           path: build/*.ipa
           if-no-files-found: error
 
@@ -45,6 +45,6 @@ jobs:
         if: failure()
         uses: actions/upload-artifact@v4
         with:
-          name: xcodebuild-log-v9
+          name: xcodebuild-log-v10
           path: build/xcodebuild.log
           if-no-files-found: ignore
