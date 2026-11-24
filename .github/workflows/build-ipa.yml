@@ -20,14 +20,14 @@ jobs:
       - name: Show Xcode
         run: xcodebuild -version
 
-      - name: Prepare complete v10.1 source
+      - name: Prepare complete v10.2 source
         run: |
           set -euo pipefail
           test -f "MMDStudio-v10.zip"
           unzip -q -o "MMDStudio-v10.zip"
           test -d "MMDStudio.xcodeproj"
-          grep -q "MARKETING_VERSION = 10.1" MMDStudio.xcodeproj/project.pbxproj
-          grep -q "CURRENT_PROJECT_VERSION = 11" MMDStudio.xcodeproj/project.pbxproj
+          grep -q "MARKETING_VERSION = 10.2" MMDStudio.xcodeproj/project.pbxproj
+          grep -q "CURRENT_PROJECT_VERSION = 12" MMDStudio.xcodeproj/project.pbxproj
 
       - name: Build IPA
         run: |
@@ -37,7 +37,7 @@ jobs:
       - name: Upload IPA artifact
         uses: actions/upload-artifact@v4
         with:
-          name: MMDStudio-unsigned-v10.1
+          name: MMDStudio-unsigned-v10.2
           path: build/*.ipa
           if-no-files-found: error
 
@@ -45,6 +45,6 @@ jobs:
         if: failure()
         uses: actions/upload-artifact@v4
         with:
-          name: xcodebuild-log-v10.1
+          name: xcodebuild-log-v10.2
           path: build/xcodebuild.log
           if-no-files-found: ignore
